@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Local expertise. Fast response.</p>
+    <h1>Everything you need in Devakottai, in one smart directory.</h1>
+    <p class="lead">
+      Choose a sector and see the top-rated providers curated by our team.
+      Book a service in minutes.
+    </p>
+    <div class="hero-actions">
+      <a class="btn primary" href="{{ url_for('book') }}">Book Now</a>
+      <a class="btn ghost" href="{{ url_for('login') }}">Login</a>
+      <a class="btn ghost" href="{{ url_for('admin_login') }}">Admin</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <div class="hero-card-title">Service Pulse</div>
+    <ul>
+      <li>Curated by rating</li>
+      <li>Verified local businesses</li>
+      <li>Direct booking channel</li>
+    </ul>
+  </div>
+</section>
+
+<section class="sector-grid">
+  {% for key, name in sectors %}
+    <a class="sector-card" href="{{ url_for('sector', sector_key=key) }}">
+      <div class="sector-title">{{ name }}</div>
+      <div class="sector-meta">Top rated listings</div>
+      <div class="sector-cta">Explore</div>
+    </a>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+  <div class="sector-header">
+    <h2>{{ sector_name }}</h2>
+    <p class="lead">Sorted by rating (highest first).</p>
+  </div>
+
+  {% if rows %}
+    <div class="listings">
+      {% for row in rows %}
+        <div class="listing">
+          <div class="listing-head">
+            <div>
+              <h3>{{ row['name'] }}</h3>
+              <p>{{ row['description'] or '' }}</p>
+            </div>
+            <div class="rating">{{ row['rating'] }}/5</div>
+          </div>
+          <div class="listing-meta">
+            <span>{{ row['contact'] or 'Contact not listed' }}</span>
+            <span>{{ row['address'] or 'Address not listed' }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">No listings yet. Add entries to this sector table.</div>
+  {% endif %}
+</section>
+{% endblock %}

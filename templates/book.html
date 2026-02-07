@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel book-panel">
+  <h2>Book a Service</h2>
+  <p class="lead">Tell us what you need and our team will reach you quickly.</p>
+  <div class="location-status" id="location-status">Getting live location...</div>
+  <form method="post" action="{{ url_for('book') }}" class="form grid" id="booking-form">
+    <input type="hidden" name="latitude" id="latitude" />
+    <input type="hidden" name="longitude" id="longitude" />
+    <input type="hidden" name="geo_address" id="geo_address" />
+    <div>
+      <label>Full Name</label>
+      <input type="text" name="name" placeholder="Your name" required />
+    </div>
+    <div>
+      <label>Mobile Number</label>
+      <input type="text" name="mobile" placeholder="+91-XXXXXXXXXX" required />
+    </div>
+    <div class="full">
+      <label>Address</label>
+      <textarea name="address" placeholder="Street, city, landmark" rows="3" required></textarea>
+    </div>
+    <div class="full">
+      <label>Sector Needed</label>
+      <select name="sector" required>
+        <option value="" disabled selected>Select a sector</option>
+        {% for key, name in sectors %}
+          <option value="{{ key }}">{{ name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="full">
+      <button class="btn primary" type="submit">Submit Booking</button>
+    </div>
+  </form>
+</section>
+
+<script>
+  const statusEl = document.getElementById('location-status');
+  const latEl = document.getElementById('latitude');
+  const lngEl = document.getElementById('longitude');
+  const geoEl = document.getElementById('geo_address');
+
+  function updateStatus(text, ok = false) {
+    statusEl.textContent = text;
+    statusEl.classList.toggle('ok', ok);
+  }
+
+  function reverseGeocode(lat, lng) {
+    return fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.display_name) {
+          geoEl.value = data.display_name;
+        }
+      })
+      .catch(() => {});
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        latEl.value = latitude.toFixed(7);
+        lngEl.value = longitude.toFixed(7);
+        updateStatus('Live location captured.', true);
+        reverseGeocode(latitude, longitude);
+      },
+      () => {
+        updateStatus('Location access denied. Please allow location to continue.');
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
+  } else {
+    updateStatus('Geolocation is not supported on this device.');
+  }
+</script>
+{% endblock %}

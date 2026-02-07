@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel admin-panel">
+  <div class="admin-header">
+    <div>
+      <h2>Admin Dashboard</h2>
+      <p class="lead">Manage listings for each sector.</p>
+    </div>
+    <a class="btn ghost" href="{{ url_for('admin_logout') }}">Logout</a>
+  </div>
+
+  <div class="admin-grid">
+    <aside class="sector-menu">
+      <h3>Sectors</h3>
+      <ul>
+        {% for key, name in sectors %}
+          <li>
+            <a class="{% if key == active_sector %}active{% endif %}" href="{{ url_for('admin_dashboard', sector=key) }}">
+              {{ name }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </aside>
+
+    <div class="admin-main">
+      <div class="panel nested">
+        <h3>Add Listing</h3>
+        <form method="post" action="{{ url_for('admin_add_listing', sector_key=active_sector) }}" class="form grid">
+          <div>
+            <label>Name</label>
+            <input type="text" name="name" required />
+          </div>
+          <div>
+            <label>Rating (0-5)</label>
+            <input type="number" name="rating" min="0" max="5" step="0.1" required />
+          </div>
+          <div class="full">
+            <label>Description</label>
+            <textarea name="description" rows="2"></textarea>
+          </div>
+          <div>
+            <label>Contact</label>
+            <input type="text" name="contact" />
+          </div>
+          <div>
+            <label>Address</label>
+            <input type="text" name="address" />
+          </div>
+          <div class="full">
+            <button class="btn primary" type="submit">Add Listing</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel nested">
+        <h3>Listings</h3>
+        {% if rows %}
+          <div class="listings">
+            {% for row in rows %}
+              <div class="listing">
+                <div class="listing-head">
+                  <div>
+                    <h3>{{ row['name'] }}</h3>
+                    <p>{{ row['description'] or '' }}</p>
+                  </div>
+                  <div class="rating">{{ row['rating'] }}/5</div>
+                </div>
+                <div class="listing-meta">
+                  <span>{{ row['contact'] or 'Contact not listed' }}</span>
+                  <span>{{ row['address'] or 'Address not listed' }}</span>
+                </div>
+                <div class="listing-actions">
+                  <a class="btn ghost" href="{{ url_for('admin_edit_listing', sector_key=active_sector, listing_id=row['id']) }}">Edit</a>
+                  <form method="post" action="{{ url_for('admin_delete_listing', sector_key=active_sector, listing_id=row['id']) }}">
+                    <button class="btn danger" type="submit">Delete</button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty">No listings yet for this sector.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
